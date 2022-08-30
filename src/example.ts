@@ -18,22 +18,23 @@ const examples = async () => {
     async function way2() {
         console.log('Run way2')
         const runner = new Executer()
-        const context = {request: 'request', page: 'page'}
 
-        runner.setExecutionList({
+        const possibleExecutionSteps = {
             [Steps.CREATE_ORDER]: {
                 func: createOrder,
                 args: ['Title way 2', 100]
             },
             [Steps.UPDATE_ORDER]: {
                 func: updateOrder,
-                args: (id) => ([id, 'Rando title'])
+                args: (id: number) => ([id, 'Rando title'])
             },
             [Steps.HIRE_EXPERT]: {
                 func: hireExpert,
-                args: ({id}) => [{orderId: id, authorId: 999}]
+                args: ({id}: {id: number}) => [{orderId: id, authorId: 999}]
             }
-        })
+        }
+
+        runner.setExecutionList(possibleExecutionSteps)
 
         await runner.executePipeline(
             [wait],
