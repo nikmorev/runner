@@ -28,7 +28,8 @@ const runner = new Runner()
 // Argument for the "executePipeline" - an array of items to execute [item1, itme2, ...]
 // execution item is an array too
 // execution item is [function to run, custom args for the function as an array or a function]
-// if instead of array of args a function is passed, the result of previously executed function is available as args of the function
+// if instead of array of args a function is passed, the result of previously 
+// executed function is available as args of the function
 // execution item example 1: 
 //      [foo, ['hi', 'you']] => will be in runtime foo('hi', 'you')
 // execution item example 2: 
@@ -64,7 +65,8 @@ const runner = new Runner()
 // create a structure of steps, where a key - step name, value - an object that
 // consists of "func" - function to run, "args" - arguments that are passed to func
 // args can be an array, or a function
-// if instead of array of args a function is passed, the result of previously executed function is available as args of the function
+// if instead of array of args a function is passed, the result of previously 
+// executed function is available as args of the function
 const possibleExecutionSteps = {
     [Steps.CREATE_ORDER]: {
         func: createOrderFunc,
@@ -87,14 +89,21 @@ runner.setExecutionList(possibleExecutionSteps)
 // Argument for the "executePipeline" - an array of items to execute [item1, itme2, ...]
 // execution item is an array too
 // execution item is [name of step to run, custom args for the function as an array or a function]
-// custom args for the function as an array or a function are optional and just overwrite args in possibleExecutionSteps for the given step
-// if instead of array of args a function is passed, the result of previously executed function is available as args of the function
+// custom args for the function as an array or a function are optional and just 
+// overwrite args in possibleExecutionSteps for the given step
+// if instead of array of args a function is passed, the result 
+// of previously executed function is available as args of the function
 // if you want, you can combine this method of execution function with the "way number 1"
 await runner.executePipeline(
-    [wait], // just some function
-    [Steps.CREATE_ORDER], // run the func = possibleExecutionSteps[Steps.CREATE_ORDER].func with args = possibleExecutionSteps[Steps.CREATE_ORDER].args
-    [Steps.UPDATE_ORDER, (id) => ([id, 'Way 2 title update'])], // run the func = possibleExecutionSteps[Steps.UPDATE_ORDER].func with args = (id, 'Way 2 title update') defined dynamically based on result (id) of previous step (CREATE_ORDER)
-    [Steps.HIRE_EXPERT] // run the func = possibleExecutionSteps[Steps.HIRE_EXPERT].func with args = possibleExecutionSteps[Steps.HIRE_EXPERT].args 
+    // just some function
+    [wait],
+    // run the func = possibleExecutionSteps[Steps.CREATE_ORDER].func with args = possibleExecutionSteps[Steps.CREATE_ORDER].args
+    [Steps.CREATE_ORDER],
+    // run the func = possibleExecutionSteps[Steps.UPDATE_ORDER].func with args = (id, 'Way 2 title update') 
+    // defined dynamically based on result (id) of previous step (CREATE_ORDER)
+    [Steps.UPDATE_ORDER, (id) => ([id, 'Way 2 title update'])],
+    // run the func = possibleExecutionSteps[Steps.HIRE_EXPERT].func with args = possibleExecutionSteps[Steps.HIRE_EXPERT].args
+    [Steps.HIRE_EXPERT]  
 )
 ```
 
