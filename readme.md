@@ -24,7 +24,7 @@ const runner = new Runner()
 // Call the method "executePipeline" to consequently execute your functions
 // Argument for the "executePipeline" - an array of items to execute [item1, itme2, ...]
 // execution item is an array too
-// execution item is [function to run, custom args as an array]
+// execution item is [function to run, custom args for the function as an array]
 // execution item example 1: 
 //      [foo, ['hi', 'you']] => will be in runtime foo('hi', 'you')
 // execution item example 2: 
@@ -37,6 +37,8 @@ runner.executePipeline([
 ```
 
 ### Way number 2:
+
+You can create a structure of predefined steps, and combine steps as you wish.  
 ```typescript
 // create helper instance
 const runner = new Runner()
