@@ -37,11 +37,23 @@ const runner = new Runner()
 // execution items example 3 (function "foo" returns a string) : 
 //      [foo, ['hello', 'world']] => will be in runtime foo('hello', 'world')
 //      [bar, (resultFromFoo) => [resultFromFoo, anotherArg]] => will be in runtime bar(resultFromFoo, anotherArg)
-runner.executePipeline([
+await runner.executePipeline([
     [foo, ['fooArg1', 'fooArg2']],
     [boo, (fooArg1) => (['lasArg', fooArg1])],
     [las, (lasArgs1, lasArgs2) => ([lasArgs1 + lasArgs2])]
 ])
+```
+More realistic example:
+```typescript
+const runner = new Executer()
+
+const pipline: ArrayToExecute = [
+    [createOrder, ['My Essay', 10]],
+    [updateOrder, (id) => ([id, 'Amazing Essay'])],
+    [hireExpert, ({id}) => [{orderId: id, authorId: 999}]]
+]
+
+await runner.executePipeline(...pipline)
 ```
 
 ### Way number 2:
