@@ -56,6 +56,44 @@ const pipline: ArrayToExecute = [
 await runner.executePipeline(...pipline)
 ```
 
+### Way number 1_2:  
+During the pipline execution there can be a case, when you need to get result of a function,
+that has been executed few functions ago. For this case you can call a runner saving function after the executed function,
+and save the data to internal runner store under the appropriate key. Let's look at the example of using methods: `store`, `fromStore`, `storeKeys`, `resetStore`.
+
+```typescript
+const runner = new Executer()
+
+const pipline: ArrayToExecute = [
+    [createOrder, ['My Essay', 10]],
+    // store result of createOrder in internal storage of runner under key 'orderId'
+    [runner.store('orderId', (orderId: any) => orderId)],
+    [updateOrder, (id) => ([id, 'Amazing Essay'])],
+    // store some other data from prev step (updateOrder) under key 'titleAndOrder'
+    [runner.store('titleAndOrder', (prevFuncResult: any) => ({
+        title: prevFuncResult.title,
+        id: runner.fromStore('orderId')
+    }))],
+    // use stored 'orderId' in hireExpert, get it from internal store by key: runner.fromStore('orderId')
+    [hireExpert, () => [{orderId: runner.fromStore('orderId'), authorId: 999}]]
+]
+await runner.executePipeline(...pipline)
+// get keys of runner internal store 
+console.log(runner.storeKeys)
+// get value from internal store by key
+runner.fromStore('titleAndOrder')
+// reset runner internal store (romove all keys and values) - it's not necessary, just cleanup example
+runner.resetStore()
+```
+
+To store the data use `runner.store` method, where first arg is the key, 
+the second arg is a function that get previously executed function result as arg, 
+and should return the value that will be saved in internal store under the defined key.  
+
+To get stored data by key use `runner.store(someKey)`
+
+If no key found - there will be an exception thrown.
+
 ### Way number 2:
 
 You can create a structure of predefined steps, and combine steps as you wish.  

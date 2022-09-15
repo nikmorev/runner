@@ -12,8 +12,9 @@ enum Steps {
 }
 
 const examples = async () => {
-    await way1().then(console.log)
-    await way2().then(console.log)
+    // await way1().then(console.log)
+    await way1_2().then(console.log)
+    // await way2().then(console.log)
 
     async function way2() {
         console.log('Run way2')
@@ -58,6 +59,29 @@ const examples = async () => {
         ]
         await runner.executePipeline(...pipline)
 
+        return runner.getExecutionResults()
+    }
+
+    async function way1_2(){
+
+        console.log('Run way1_2 with intermediate data saving')
+        const runner = new Executer()
+
+        const pipline: ArrayToExecute = [
+            [createOrder, ['My Essay', 10]],
+            [runner.store('orderId', (orderId: any) => orderId)],
+            [updateOrder, (id) => ([id, 'Amazing Essay'])],
+            [runner.store('titleAndOrder', (prevFuncResult: any) => ({
+                title: prevFuncResult.title,
+                id: runner.fromStore('orderId')
+            }))],
+            [hireExpert, () => [{orderId: runner.fromStore('orderId'), authorId: 999}]]
+        ]
+        await runner.executePipeline(...pipline)
+        console.log('keys of runner internal store:', runner.storeKeys)
+        console.log('get titleAndOrder from storage uf runner completed: ', runner.fromStore('titleAndOrder'))
+        console.log('reset runner internal store')
+        runner.resetStore()
         return runner.getExecutionResults()
     }
 

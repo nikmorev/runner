@@ -4,6 +4,7 @@ export class Executer implements IExecuter {
     private lastExecutionFunction?: string
     private executionList?: ExecutionList
     private executed?: any = {}
+    private _storage: any = {}
 
     constructor(executionList?: ExecutionList) {
         if (executionList) this.setExecutionList(executionList)
@@ -59,12 +60,12 @@ export class Executer implements IExecuter {
             args = fnAndArgs.args
         } else fn = executionItem
 
+        if (fn.name === '__runner_store') return fn(this.lastExecutionResult)
+
         if (itemArgs) {
-            args = (
-                typeof itemArgs !==  'function'
+            args = typeof itemArgs !==  'function'
                 ? itemArgs
                 : itemArgs(this.lastExecutionResult)
-            )
         }
 
         if (!args) args = []
@@ -77,7 +78,7 @@ export class Executer implements IExecuter {
         this.lastExecutionResult = result
         // memo execution function name
         this.lastExecutionFunction = name
-        // memo execution result and save it in global store
+        // memo execution result and save it in global store if func has a name
         if (!this.executed[name]) this.executed[name] = []
         this.executed[name].push(result)
 
@@ -139,6 +140,42 @@ export class Executer implements IExecuter {
         }
 
         return {fn, args}
+    }
+
+    /**
+     * @method store value by key inside runner's storage
+     * @param {string} key
+     * @param {ReturnDataHandler} saving
+     */
+    public store(key: string, saving: ReturnDataHandler | any) {
+        const self = this
+        return function __runner_store(data: any) {
+            self._storage[key] = (typeof saving === 'function')
+                ? saving(data)
+                : saving
+
+            return data
+        }
+    }
+
+    /**
+     * @method get the value by key from internal store
+     * @param {string} key
+     */
+    public fromStore(key: string) {
+        if (!(key in this._storage)) throw new Error(`No key '${key}' found in runner internal storage.`)
+        return this._storage[key]
+    }
+
+    public get storeKeys() {
+        return Object.keys(this._storage)
+    }
+
+    /**
+     * @method reset the internal _storage
+     */
+    public resetStore() {
+        this._storage = {}
     }
 }
 
